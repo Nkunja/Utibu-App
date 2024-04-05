@@ -1,6 +1,9 @@
-// Import necessary components
 import React, { useState, useEffect } from 'react';
 import { View, Text, FlatList, ActivityIndicator, StyleSheet, TouchableOpacity } from 'react-native';
+import * as FileSystem from 'expo-file-system';
+import * as MediaLibrary from 'expo-media-library';
+import { Alert } from 'react-native';
+import * as Permissions from 'expo-permissions';
 
 import { BASE_URL } from '@env';
 
@@ -9,44 +12,70 @@ const OrdersScreen = () => {
   const [orders, setOrders] = useState([]);
 
   useEffect(() => {
-    fetch(`${BASE_URL}api/orders/`)
-      .then(response => response.json())
-      .then(data => {
-        setOrders(data);
-        setLoading(false);
-      })
-      .catch(error => {
-        console.error('Error fetching orders:', error);
-        setLoading(false);
-      });
+    fetchOrders();
   }, []);
 
-  const viewInvoice = async (orderId) => {
-    // try {
-    //   // Fetch PDF invoice from the API endpoint
-    //   const response = await fetch(`${BASE_URL}${orderId}api/invoice/`, {
-    //     method: 'GET',
-    //     headers: {
-          
-    //     },
-    //   });
-  
-    //   if (!response.ok) {
-    //     throw new Error('Failed to fetch invoice');
-    //   }
-  
-    //   const invoicePdf = await response.text(); // Assuming the response contains the base64 encoded PDF content
-  
-    //   // Decode base64 encoded PDF content
-    //   const decodedPdf = atob(invoicePdf);
-  
-    //   // Open the PDF in the app's browser
-    //   Linking.openURL(`data:application/pdf;base64,${decodedPdf}`);
-    // } catch (error) {
-    //   console.error('Error viewing invoice:', error.message);
-    //   // Handle error
-    // }
+  const fetchOrders = async () => {
+    try {
+      const response = await fetch(`${BASE_URL}api/orders/`);
+      const data = await response.json();
+      setOrders(data);
+      setLoading(false);
+    } catch (error) {
+      console.error('Error fetching orders:', error);
+      setLoading(false);
+    }
   };
+
+  const getPermission = async () => {
+    try {
+      const { status } = await MediaLibrary.requestPermissionsAsync();
+      return status === 'granted';
+    } catch (error) {
+      console.error('Error requesting permission:', error);
+      return false;
+    }
+  };
+  
+
+const viewInvoice = async (orderId) => {
+  try {
+    const permissionGranted = await getPermission();
+    
+    if (!permissionGranted) {
+      throw new Error('Permission to save files was denied');
+    }
+
+    const response = await fetch(`${BASE_URL}api/invoice/${orderId}/`);
+    const blob = await response.blob();
+
+    const reader = new FileReader();
+    reader.readAsDataURL(blob);
+    reader.onloadend = async () => {
+      const base64String = reader.result.split(',')[1]; 
+      
+      const fileName = `invoice_${orderId}.pdf`;
+      const fileUri = FileSystem.cacheDirectory + fileName;
+
+      // Write the base64 string to a file
+      await FileSystem.writeAsStringAsync(fileUri, base64String, { encoding: FileSystem.EncodingType.Base64 });
+
+      // Save the file to the device's media library
+      const asset = await MediaLibrary.createAssetAsync(fileUri);
+      await MediaLibrary.createAlbumAsync('Downloads', asset, false);
+
+      const message = 'Invoice downloaded successfully!';
+      const filePath = `File saved to: ${fileUri}`;
+      Alert.alert(message, filePath);
+    };
+  } catch (error) {
+    console.error('Error downloading invoice:', error);
+    alert('Failed to download invoice.');
+  }
+};
+
+  
+  
 
   if (loading) {
     return (

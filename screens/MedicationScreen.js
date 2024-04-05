@@ -31,7 +31,7 @@ export default function MedicationScreen({navigatio}) {
       <Text style={styles.title}>{item.name}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.price}>{item.price}</Text>
-      <TouchableOpacity style={styles.orderButton}>
+      <TouchableOpacity style={styles.orderButton} onPress={() => handleMedicationPress(item.id)}>
         <Text style={styles.orderButtonText}>Order Now</Text>
       </TouchableOpacity>
     </TouchableOpacity>
