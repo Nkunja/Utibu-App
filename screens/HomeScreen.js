@@ -1,6 +1,7 @@
 import React from 'react';
-import { StyleSheet, View, Text, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Image } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
+// import image from '../assets/icon.png';
 
 export default function HomeScreen({ navigation }) {
   const handleLoginPress = () => {
@@ -14,6 +15,7 @@ export default function HomeScreen({ navigation }) {
   return (
     <View style={styles.container}>
       <View style={styles.top}>
+        <Image source={require('../assets/icon.png')} style={styles.icon} />
         <Text style={styles.title}>Welcome to Utibu App</Text>
       </View>
       <View style={styles.bottom}>
@@ -79,5 +81,10 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: 'bold',
     marginLeft: 10,
+  },
+  icon: {
+    width: 250, 
+    height: 200, 
+    marginBottom: 20,
   },
 });
