@@ -55,7 +55,8 @@ const viewInvoice = async (orderId) => {
       const base64String = reader.result.split(',')[1]; 
       
       const fileName = `invoice_${orderId}.pdf`;
-      const fileUri = FileSystem.cacheDirectory + fileName;
+      // const fileUri = FileSystem.cacheDirectory + fileName;
+      const fileUri = FileSystem.documentDirectory + fileName;
 
       // Write the base64 string to a
       await FileSystem.writeAsStringAsync(fileUri, base64String, { encoding: FileSystem.EncodingType.Base64 });
