@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { StyleSheet, View, Text, FlatList, TouchableOpacity } from 'react-native';
+import { StyleSheet, View, Text, FlatList, TouchableOpacity, Image } from 'react-native';
 import { useNavigation } from '@react-navigation/native';
 import BottomTab from '../components/BottomTab';
 import { BASE_URL } from '@env';
 
-export default function MedicationScreen({navigatio}) {
+export default function MedicationScreen({ navigatio }) {
   const [medications, setMedications] = useState([]);
   const navigation = useNavigation();
 
@@ -28,6 +28,7 @@ export default function MedicationScreen({navigatio}) {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.item} onPress={() => handleMedicationPress(item.id)}>
+      <Image source={{ uri: `data:image/jpeg;base64,${item.image_data}` }} style={styles.image} />
       <Text style={styles.title}>{item.name}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.price}>{item.price}</Text>
@@ -42,11 +43,11 @@ export default function MedicationScreen({navigatio}) {
       <FlatList
         data={medications}
         renderItem={renderItem}
-        keyExtractor={item => item.id.toString()}
+        keyExtractor={(item) => item.id.toString()}
         numColumns={2}
         contentContainerStyle={styles.flatListContainer}
       />
-      <BottomTab navigation={navigation}/>
+      <BottomTab navigation={navigation} />
     </View>
   );
 }
@@ -61,7 +62,7 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
   },
   item: {
-    backgroundColor: '#00FFFF',
+    backgroundColor: '#FFF0',
     borderRadius: 5,
     padding: 20,
     marginVertical: 10,
@@ -69,6 +70,12 @@ const styles = StyleSheet.create({
     flex: 1,
     minWidth: '45%',
     maxWidth: '45%',
+  },
+  image: {
+    width: '100%',
+    height: 150,
+    marginBottom: 10,
+    borderRadius: 5,
   },
   title: {
     fontSize: 16,

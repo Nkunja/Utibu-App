@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet, View, Text, TouchableOpacity, Alert } from 'react-native';
+import { StyleSheet, View, Text, TouchableOpacity, Alert, Image } from 'react-native';
 import BottomTab from '../components/BottomTab';
 import { BASE_URL } from '@env';
 
 export default function MedicationDetailsScreen({ route, navigation }) {
   const { medicationId } = route.params;
   const [medication, setMedication] = useState(null);
-  const [quantity, setQuantity] = useState(1); 
+  const [quantity, setQuantity] = useState(1);
 
   useEffect(() => {
     const fetchMedicationDetails = async () => {
@@ -21,7 +21,7 @@ export default function MedicationDetailsScreen({ route, navigation }) {
         console.error('Error fetching medication details:', error);
       }
     };
-  
+
     fetchMedicationDetails();
   }, [medicationId]);
 
@@ -48,15 +48,14 @@ export default function MedicationDetailsScreen({ route, navigation }) {
 
   const handleOrderNow = async () => {
     try {
-
-        const totalPrice = calculateTotalPrice();
+      const totalPrice = calculateTotalPrice();
 
       const requestBody = {
         medication: medicationId,
         quantity: quantity,
         totalPrice: totalPrice,
       };
-      
+
       console.log('Request Body:', requestBody);
 
       const csrfToken = await getCsrfToken();
@@ -68,13 +67,13 @@ export default function MedicationDetailsScreen({ route, navigation }) {
         },
         body: JSON.stringify(requestBody),
       });
-     
+
       if (!response.ok) {
         const errorData = await response.json();
         console.log(errorData)
         throw new Error(errorData.error || 'Failed to submit order');
       }
-      
+
       const responseData = await response.json();
       console.log('Order submitted successfully:', responseData);
       Alert.alert('Success', 'Order submitted successfully');
@@ -83,8 +82,6 @@ export default function MedicationDetailsScreen({ route, navigation }) {
       Alert.alert('Error', 'Failed to submit order');
     }
   };
-
-  
 
   const handleIncreaseQuantity = () => {
     // Increase the quantity by 1
@@ -97,7 +94,6 @@ export default function MedicationDetailsScreen({ route, navigation }) {
       setQuantity(quantity - 1);
     }
   };
-  
 
   if (!medication) {
     return (
@@ -109,6 +105,7 @@ export default function MedicationDetailsScreen({ route, navigation }) {
 
   return (
     <View style={styles.container}>
+      <Image source={{ uri: `data:image/jpeg;base64,${medication.image_data}` }} style={styles.image} />
       <Text style={styles.title}>{medication.name}</Text>
       <Text style={styles.description}>{medication.description}</Text>
       <Text style={styles.price}>Unit Price: {medication.price}</Text>
@@ -122,7 +119,7 @@ export default function MedicationDetailsScreen({ route, navigation }) {
           <Text>-</Text>
         </TouchableOpacity>
       </View>
-    
+
       <TouchableOpacity style={styles.button} onPress={handleOrderNow}>
         <Text style={styles.buttonText}>Order Now</Text>
       </TouchableOpacity>
@@ -136,6 +133,12 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff',
     padding: 10,
+  },
+  image: {
+    width: '100%',
+    height: 200,
+    marginBottom: 10,
+    borderRadius: 5,
   },
   title: {
     fontSize: 20,
@@ -154,17 +157,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     marginBottom: 10,
-  },
-  quantityContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    marginBottom: 10,
-  },
-  quantityButton: {
-    backgroundColor: 'lightblue',
-    padding: 5,
-    borderRadius: 5,
-    marginHorizontal: 5,
   },
   quantityButton: {
     backgroundColor: 'lightblue',
