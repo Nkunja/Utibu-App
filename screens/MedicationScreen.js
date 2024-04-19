@@ -28,7 +28,8 @@ export default function MedicationScreen({ navigatio }) {
 
   const renderItem = ({ item }) => (
     <TouchableOpacity style={styles.item} onPress={() => handleMedicationPress(item.id)}>
-      <Image source={{ uri: `data:image/jpeg;base64,${item.image_data}` }} style={styles.image} />
+      {/* <Image source={{ uri: `data:image/jpeg;base64,${item.image_data}` }} style={styles.image} /> */}
+      {/* <Image source={item.image_url} style={styles.image} /> */}
       <Text style={styles.title}>{item.name}</Text>
       <Text style={styles.description}>{item.description}</Text>
       <Text style={styles.price}>{item.price}</Text>

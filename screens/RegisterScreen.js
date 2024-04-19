@@ -22,7 +22,8 @@ const Register = () => {
       headers: {
         'Content-Type': 'application/json',
         'X-CSRFToken': csrfToken,
-        'Cookie': `csrftoken=${csrfToken}`, // Include the CSRF token in the Cookie header
+        // 'Cookie': `csrftoken=${csrfToken}`, 
+        'Referer': BASE_URL,
       },
       body: JSON.stringify(formData),
     });

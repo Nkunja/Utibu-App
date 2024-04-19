@@ -27,6 +27,7 @@ const LoginScreen = () => {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
+          'Referer': BASE_URL,
         },
         body: JSON.stringify(formData),
       });

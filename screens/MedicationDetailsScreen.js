@@ -64,6 +64,7 @@ export default function MedicationDetailsScreen({ route, navigation }) {
         headers: {
           'Content-Type': 'application/json',
           'X-CSRFToken': csrfToken,
+          'Referer': BASE_URL,
         },
         body: JSON.stringify(requestBody),
       });
